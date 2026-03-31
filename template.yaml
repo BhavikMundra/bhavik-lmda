@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudForge stack for Lambda bhavik-lmda
+
+Resources:
+    LambdaExecutionRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: Allow
+                        Principal:
+                            Service:
+                                - lambda.amazonaws.com
+                        Action:
+                            - sts:AssumeRole
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+    LambdaFunction:
+        Type: AWS::Lambda::Function
+        Properties:
+            FunctionName: bhavik-lmda
+            Runtime: python3.11
+            Handler: index.handler
+            Timeout: 30
+            MemorySize: 128
+            Role: !GetAtt LambdaExecutionRole.Arn
+            Code:
+                ZipFile: |
+                    def handler(event, context):
+                            return {
+                                    "statusCode": 200,
+                                    "body": "Hello from CloudForge Lambda!"
+                            }
+
+Outputs:
+    LambdaFunctionArn:
+        Description: ARN of the created Lambda function
+        Value: !GetAtt LambdaFunction.Arn
